@@ -16,13 +16,17 @@ set(PROJECT_SOURCES
     main.cpp
     mainwindow.cpp
     mainwindow.h
+    widgets/TimeLabel.h
+    widgets/TimeLabel.cpp
+    utils/json_storage/JsonStorage.h
+    utils/json_storage/JsonStorage.cpp
 )
 
-qt_add_executable(timer_for_work_qt MANUAL_FINALIZATION ${PROJECT_SOURCES})
+qt_add_executable(${PROJECT_NAME} MANUAL_FINALIZATION ${PROJECT_SOURCES})
 
-target_link_libraries(timer_for_work_qt PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
-set_target_properties(timer_for_work_qt PROPERTIES
+set_target_properties(${PROJECT_NAME} PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -30,17 +34,17 @@ set_target_properties(timer_for_work_qt PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-install(TARGETS timer_for_work_qt
+install(TARGETS ${PROJECT_NAME}
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(timer_for_work_qt)
+    qt_finalize_executable(${PROJECT_NAME})
 endif()
 
-add_custom_command(TARGET timer_for_work_qt POST_BUILD
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E
         env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
-            "$<TARGET_FILE:timer_for_work_qt>"
+            "$<TARGET_FILE:${PROJECT_NAME}>"
     COMMENT "Running windeployqt..."
 )
