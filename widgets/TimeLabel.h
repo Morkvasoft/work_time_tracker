@@ -11,6 +11,8 @@ public:
   ~TimeLabel();
 
   void setTime(int time);
+  void setTodayTime(int timeSec);
+
 private:
 
 private:

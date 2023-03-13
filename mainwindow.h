@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include "utils/json_storage/JsonStorage.h"
+#include "utils/user_settings/UserSettings.h"
 
 class MainWindow : public QMainWindow
 {
@@ -15,7 +16,7 @@ class MainWindow : public QMainWindow
 
     void createMenu();
     void createFileMenuItem();
-    int m_time = 0;
-    JsonStorage m_jsonStorage;
+
+    JsonStorage m_storage;
 };
 #endif // MAINWINDOW_H

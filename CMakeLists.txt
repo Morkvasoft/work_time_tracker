@@ -20,6 +20,8 @@ set(PROJECT_SOURCES
     widgets/TimeLabel.cpp
     utils/json_storage/JsonStorage.h
     utils/json_storage/JsonStorage.cpp
+    utils/user_settings/UserSettings.h
+    utils/user_settings/UserSettings.cpp
 )
 
 qt_add_executable(${PROJECT_NAME} MANUAL_FINALIZATION ${PROJECT_SOURCES})

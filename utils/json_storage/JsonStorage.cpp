@@ -15,6 +15,9 @@ const char* DAY_TIME_KEY = "day_time";
 const char* PROJECTS_KEY = "projects";
 const char* PROJECT_NAME_KEY = "project_name";
 const char* PROJECT_TIME_KEY = "project_time";
+
+static const int SAVE_FREQUENCY_SEC = 5;
+
 } // namespace
 
 JsonStorage::JsonStorage()
@@ -28,8 +31,15 @@ JsonStorage::~JsonStorage()
     qDebug() << ">>>> JsonStorage destructor";
 }
 
-void JsonStorage::updateCurrentDay(int timeSec, const QString& projectName)
+void JsonStorage::updateCurrentDay(int timeSec1, const QString& projectName)
 {
+    m_timeCollector++;
+    if(!isReadyToSaveWorkingTime())
+    {
+        return;
+    }
+
+    int timeSec = m_timeCollector;
     QJsonArray projects = getCurrentDayProjects();
     if (isProjectExistsInArray(projects, projectName))
     {
@@ -53,6 +63,12 @@ void JsonStorage::updateCurrentDay(int timeSec, const QString& projectName)
 
     checkNewDay();
     storeCurrentDayDataToFile();
+    m_timeCollector = 0;
+}
+
+bool JsonStorage::isReadyToSaveWorkingTime() const
+{
+    return m_timeCollector >= SAVE_FREQUENCY_SEC;
 }
 
 void JsonStorage::updateCalendar()
@@ -87,6 +103,11 @@ uint32_t JsonStorage::getCurrentDayTime() const
     }
 
     return 0;
+}
+
+uint32_t JsonStorage::getCurrentDayTimeUnsaved() const
+{
+    return getCurrentDayTime() + m_timeCollector;
 }
 
 QJsonArray JsonStorage::getCurrentDayProjects() const

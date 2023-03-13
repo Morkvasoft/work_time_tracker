@@ -16,6 +16,7 @@ class JsonStorage
     void updateCalendar();
 
     uint32_t getCurrentDayTime() const;
+    uint32_t getCurrentDayTimeUnsaved() const;
 
     // private:
     void storeCalendarDataToFile();
@@ -25,6 +26,7 @@ class JsonStorage
     void storeCurrentDayDataToFile();
     void readCurrentDayDataFromFile();
     void checkNewDay();
+    bool isReadyToSaveWorkingTime() const;
 
     QJsonArray getCurrentDayProjects() const;
 
@@ -36,6 +38,7 @@ class JsonStorage
   private:
     QJsonObject m_currentDayDictionary;
     QJsonObject m_calendarDictionary;
+    int m_timeCollector = 0;
 };
 
 #endif // JSON_STORAGE_H_
