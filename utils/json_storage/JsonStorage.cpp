@@ -34,7 +34,7 @@ JsonStorage::~JsonStorage()
 void JsonStorage::updateCurrentDay(int timeSec1, const QString& projectName)
 {
     m_timeCollector++;
-    if(!isReadyToSaveWorkingTime())
+    if (!isReadyToSaveWorkingTime())
     {
         return;
     }

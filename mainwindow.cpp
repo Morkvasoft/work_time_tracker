@@ -1,15 +1,17 @@
 #include "mainwindow.h"
 
 #include <QComboBox>
+#include <QDialog>
 #include <QLabel>
 #include <QMenuBar>
 #include <QPushButton>
+#include <QSettings>
+#include <QSizePolicy>
 #include <QTimer>
 #include <QVBoxLayout>
-#include <QSettings>
-#include <QDialog>
 
 #include "widgets/TimeLabel.h"
+#include "widgets/dialogs/CalendarDialog.h"
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
@@ -20,10 +22,11 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     centralWidget->layout()->setAlignment(Qt::AlignCenter);
     centralWidget->layout()->setContentsMargins(0, 0, 0, 0);
     centralWidget->setStyleSheet("background-color:gray;");
-
     this->setCentralWidget(centralWidget);
 
     TimeLabel* label = new TimeLabel(this->centralWidget());
+    label->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+
     label->setTime(m_storage.getCurrentDayTime());
 
     QComboBox* projects = new QComboBox(this->centralWidget());
@@ -31,22 +34,20 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     projects->addItem("rpg_editor");
 
     UserSettings settings;
-    if(!settings.getLastActiveProject().isEmpty())
+    if (!settings.getLastActiveProject().isEmpty())
     {
         projects->setCurrentText(settings.getLastActiveProject());
     }
 
-    connect(projects, &QComboBox::currentTextChanged, this, [this](const QString &text){
-        UserSettings().setLastActiveProject(text);
-    });
-
+    connect(projects, &QComboBox::currentTextChanged, this,
+            [this](const QString& text) { UserSettings().setLastActiveProject(text); });
 
     QPushButton* playPauseBtn = new QPushButton(this->centralWidget());
     playPauseBtn->setText("Play");
 
     TimeLabel* labelFullDay = new TimeLabel(this->centralWidget());
     labelFullDay->setTodayTime(m_storage.getCurrentDayTime());
-    labelFullDay->setMinimumWidth(300);
+    // labelFullDay->setMinimumWidth(300);
 
     this->centralWidget()->layout()->addWidget(label);
     this->centralWidget()->layout()->addWidget(projects);
@@ -75,7 +76,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
         }
     });
 
-// stopwatch or timer
+    // stopwatch or timer
     qDebug() << m_storage.getCurrentDateString();
 }
 
@@ -89,7 +90,7 @@ void MainWindow::createFileMenuItem()
     QMenu* toolsMenu = this->menuBar()->addMenu(tr("&File"));
 
     QAction* openSettingsAction = new QAction(tr("Settings"), this);
-    connect(openSettingsAction, &QAction::triggered, this, [this](){
+    connect(openSettingsAction, &QAction::triggered, this, [this]() {
         QDialog dialog(this);
         dialog.resize(300, 400);
         dialog.setWindowTitle(tr("Settings"));
@@ -97,10 +98,9 @@ void MainWindow::createFileMenuItem()
     });
 
     QAction* openCalendarAction = new QAction(tr("Calendar"), this);
-    connect(openCalendarAction, &QAction::triggered, this, [this](){
-        QDialog dialog(this);
-        dialog.resize(300, 400);
-        dialog.setWindowTitle(tr("Calendar"));
+    connect(openCalendarAction, &QAction::triggered, this, [this]() {
+        CalendarDialog dialog(this);
+
         dialog.exec();
     });
 

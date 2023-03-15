@@ -18,6 +18,10 @@ set(PROJECT_SOURCES
     mainwindow.h
     widgets/TimeLabel.h
     widgets/TimeLabel.cpp
+    widgets/Calendar.h
+    widgets/Calendar.cpp
+    widgets/dialogs/CalendarDialog.h
+    widgets/dialogs/CalendarDialog.cpp
     utils/json_storage/JsonStorage.h
     utils/json_storage/JsonStorage.cpp
     utils/user_settings/UserSettings.h

@@ -12,6 +12,7 @@ TimeLabel::TimeLabel(QWidget* parent)
 
     m_label = new QLabel(this);
     m_label->setText("00:00");
+    m_label->setStyleSheet("background-color:darkgray;");
 
     this->layout()->addWidget(m_label);
 }
@@ -24,7 +25,9 @@ void TimeLabel::setTime(int timeSec)
 {
     QTime time = QTime(0,0,0).addSecs(timeSec);
     QString timeStr = time.hour() > 0 ? time.toString("HH:mm:ss") : time.toString("mm:ss");
-
+    
+    QFont font( "Arial", 40, QFont::Bold);
+    m_label->setFont(font);
     m_label->setText(timeStr);
 }
 
