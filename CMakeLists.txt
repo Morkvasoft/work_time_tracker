@@ -18,8 +18,8 @@ set(PROJECT_SOURCES
     mainwindow.h
     widgets/TimeLabel.h
     widgets/TimeLabel.cpp
-    widgets/Calendar.h
-    widgets/Calendar.cpp
+    widgets/ClockFaceWidget.h
+    widgets/ClockFaceWidget.cpp
     widgets/dialogs/CalendarDialog.h
     widgets/dialogs/CalendarDialog.cpp
     utils/json_storage/JsonStorage.h
@@ -31,6 +31,7 @@ set(PROJECT_SOURCES
 qt_add_executable(${PROJECT_NAME} MANUAL_FINALIZATION ${PROJECT_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

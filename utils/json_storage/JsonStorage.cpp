@@ -88,21 +88,28 @@ void JsonStorage::updateCalendar()
     storeCalendarDataToFile();
 }
 
-uint32_t JsonStorage::getCurrentDayTime() const
+uint32_t JsonStorage::getDayTime(const QDate& date) const
 {
-    const QString dayKey = getCurrentDateString();
+    const QString dayKey = dateToString(date);
 
     if (m_currentDayDictionary.contains(dayKey))
     {
         const QJsonValue currentDay = m_currentDayDictionary.value(dayKey);
-        qDebug() << ">>>> dayKey" << dayKey;
-        qDebug() << ">>>> currentDay" << currentDay;
-        qDebug() << ">>>> currentDay" << currentDay[DAY_TIME_KEY].toString().toInt();
+        return currentDay[DAY_TIME_KEY].toString().toInt();
+    }
 
+    if (m_calendarDictionary.contains(dayKey))
+    {
+        const QJsonValue currentDay = m_calendarDictionary.value(dayKey);
         return currentDay[DAY_TIME_KEY].toString().toInt();
     }
 
     return 0;
+}
+
+uint32_t JsonStorage::getCurrentDayTime() const
+{
+    return getDayTime(QDate::currentDate());
 }
 
 uint32_t JsonStorage::getCurrentDayTimeUnsaved() const
@@ -177,6 +184,11 @@ void JsonStorage::storeCalendarDataToFile()
 
 void JsonStorage::readCalendarDataFromFile()
 {
+    if(!m_calendarDictionary.isEmpty())
+    {
+        return;
+    }
+
     QFile file("C:/Users/yevhe/Documents/morkvasoft/timer_for_work_qt/calendar.morkva.json");
     if (file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -235,5 +247,10 @@ void JsonStorage::checkNewDay()
 
 QString JsonStorage::getCurrentDateString() const
 {
-    return QDateTime::currentDateTime().toString("yyyy-MM-dd");
+    return dateToString(QDate::currentDate());
+}
+
+QString JsonStorage::dateToString(const QDate& date) const
+{
+    return date.toString("yyyy-MM-dd");
 }

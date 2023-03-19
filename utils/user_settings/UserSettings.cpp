@@ -2,17 +2,9 @@
 
 #include <QCoreApplication>
 
-UserSettings::UserSettings()
-{
-}
-
-UserSettings::~UserSettings()
-{
-}
-
 QString UserSettings::getLastActiveProject() const
 {
-    QSettings settings = settingsFile();
+    QSettings settings = settingsInFile();
     if (settings.contains("LastActiveProject"))
     {
         return settings.value("LastActiveProject").toString();
@@ -23,10 +15,10 @@ QString UserSettings::getLastActiveProject() const
 
 void UserSettings::setLastActiveProject(const QString& text)
 {
-    settingsFile().setValue("LastActiveProject", text);
+    settingsInFile().setValue("LastActiveProject", text);
 }
 
-QSettings UserSettings::settingsFile() const
+QSettings UserSettings::settingsInFile() const
 {
     return QSettings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::organizationName(),
                      QCoreApplication::applicationName());

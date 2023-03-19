@@ -5,6 +5,7 @@
 #include <QList>
 #include <QString>
 #include <QJsonArray>
+#include <QDate>
 
 class JsonStorage
 {
@@ -15,6 +16,7 @@ class JsonStorage
     void updateCurrentDay(int timeSec, const QString& projectName = "None");
     void updateCalendar();
 
+    uint32_t getDayTime(const QDate &date) const;
     uint32_t getCurrentDayTime() const;
     uint32_t getCurrentDayTimeUnsaved() const;
 
@@ -34,6 +36,7 @@ class JsonStorage
     void updateProjectTimeInArray(const QString& projectName, int timeSec, QJsonArray& projects_out);
 
     QString getCurrentDateString() const;
+    QString dateToString(const QDate &date) const;
 
   private:
     QJsonObject m_currentDayDictionary;

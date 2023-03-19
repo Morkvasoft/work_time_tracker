@@ -6,14 +6,14 @@
 class UserSettings
 {
   public:
-    UserSettings();
-    ~UserSettings();
+    UserSettings() = default;
+    ~UserSettings() = default;
 
     QString getLastActiveProject() const;
     void setLastActiveProject(const QString& text);
 
   private:
-    QSettings settingsFile() const;
+    QSettings settingsInFile() const;
 };
 
 #endif // USER_SETTING_H_

@@ -10,74 +10,38 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
+#include "widgets/ClockFaceWidget.h"
 #include "widgets/TimeLabel.h"
 #include "widgets/dialogs/CalendarDialog.h"
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
     this->resize(300, 400);
+    this->createMenu();
 
-    QWidget* centralWidget = new QWidget(this);
-    centralWidget->setLayout(new QVBoxLayout(centralWidget));
-    centralWidget->layout()->setAlignment(Qt::AlignCenter);
-    centralWidget->layout()->setContentsMargins(0, 0, 0, 0);
-    centralWidget->setStyleSheet("background-color:gray;");
-    this->setCentralWidget(centralWidget);
+    this->setCentralWidget(new QWidget(this));
+    this->centralWidget()->setLayout(new QVBoxLayout(this->centralWidget()));
+    this->centralWidget()->layout()->setAlignment(Qt::AlignCenter);
+    this->centralWidget()->layout()->setContentsMargins(0, 0, 0, 0);
+    this->centralWidget()->setStyleSheet("background-color:gray;");
 
-    TimeLabel* label = new TimeLabel(this->centralWidget());
-    label->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+    m_clockFace = new ClockFaceWidget(this->centralWidget());
+    m_clockFace->setTime(m_storage.getCurrentDayTime());
 
-    label->setTime(m_storage.getCurrentDayTime());
+    m_projectsComboBox = createProjectsComboBox(this->centralWidget());
 
-    QComboBox* projects = new QComboBox(this->centralWidget());
-    projects->addItem("None");
-    projects->addItem("rpg_editor");
+    QPushButton* playPauseBtn = new QPushButton("Play", this->centralWidget());
+    connect(playPauseBtn, &QPushButton::clicked, this, &MainWindow::toggleStopwatch);
 
-    UserSettings settings;
-    if (!settings.getLastActiveProject().isEmpty())
-    {
-        projects->setCurrentText(settings.getLastActiveProject());
-    }
+    m_labelFullDay = new TimeLabel(this->centralWidget());
+    m_labelFullDay->setTodayTime(m_storage.getCurrentDayTime());
 
-    connect(projects, &QComboBox::currentTextChanged, this,
-            [this](const QString& text) { UserSettings().setLastActiveProject(text); });
-
-    QPushButton* playPauseBtn = new QPushButton(this->centralWidget());
-    playPauseBtn->setText("Play");
-
-    TimeLabel* labelFullDay = new TimeLabel(this->centralWidget());
-    labelFullDay->setTodayTime(m_storage.getCurrentDayTime());
-    // labelFullDay->setMinimumWidth(300);
-
-    this->centralWidget()->layout()->addWidget(label);
-    this->centralWidget()->layout()->addWidget(projects);
+    this->centralWidget()->layout()->addWidget(m_clockFace);
+    this->centralWidget()->layout()->addWidget(m_projectsComboBox);
     this->centralWidget()->layout()->addWidget(playPauseBtn);
-    this->centralWidget()->layout()->addWidget(labelFullDay);
+    this->centralWidget()->layout()->addWidget(m_labelFullDay);
 
-    createMenu();
-
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, QOverload<>::of(&MainWindow::update));
-    connect(timer, &QTimer::timeout, this, [this, label, projects]() {
-        m_storage.updateCurrentDay(1, projects->currentText());
-        label->setTime(m_storage.getCurrentDayTimeUnsaved());
-    });
-
-    connect(playPauseBtn, &QPushButton::clicked, this, [this, timer, playPauseBtn]() {
-        if (timer->isActive())
-        {
-            playPauseBtn->setText("Play");
-            timer->stop();
-        }
-        else
-        {
-            playPauseBtn->setText("Pause");
-            timer->start(1000);
-        }
-    });
-
-    // stopwatch or timer
-    qDebug() << m_storage.getCurrentDateString();
+    createTimer();
 }
 
 void MainWindow::createMenu()
@@ -99,17 +63,58 @@ void MainWindow::createFileMenuItem()
 
     QAction* openCalendarAction = new QAction(tr("Calendar"), this);
     connect(openCalendarAction, &QAction::triggered, this, [this]() {
-        CalendarDialog dialog(this);
-
+        CalendarDialog dialog(m_storage, this);
         dialog.exec();
     });
 
     toolsMenu->addAction(openSettingsAction);
     toolsMenu->addAction(openCalendarAction);
-    // toolsMenu->addAction(tr("glTF Converter"), this, &MainWindow::openGLTFConverterWindow, QKeySequence(Qt::CTRL +
-    // Qt::Key_G));
 }
 
-MainWindow::~MainWindow()
+void MainWindow::createTimer()
 {
+    m_stopwatch = new QTimer(this);
+    connect(m_stopwatch, &QTimer::timeout, this, [this]() {
+        m_storage.updateCurrentDay(1, m_projectsComboBox->currentText());
+        m_clockFace->setTime(m_storage.getCurrentDayTimeUnsaved());
+        m_labelFullDay->setTodayTime(m_storage.getCurrentDayTimeUnsaved());
+    });
+}
+
+QComboBox* MainWindow::createProjectsComboBox(QWidget* parent)
+{
+    QComboBox* projectsComboBox = new QComboBox(parent);
+    projectsComboBox->addItem("None");
+    projectsComboBox->addItem("rpg_editor");
+
+    QString lastActiveProject = UserSettings().getLastActiveProject();
+    if (!lastActiveProject.isEmpty())
+    {
+        projectsComboBox->setCurrentText(lastActiveProject);
+    }
+
+    connect(projectsComboBox, &QComboBox::currentTextChanged, this,
+            [this](const QString& text) { UserSettings().setLastActiveProject(text); });
+
+    return projectsComboBox;
+}
+
+void MainWindow::toggleStopwatch(bool checked)
+{
+    QPushButton* playPauseBtn = qobject_cast<QPushButton*>(sender());
+    if (!playPauseBtn)
+    {
+        qCritical() << "Invalid sender to toggle stopwatch!";
+    }
+
+    if (m_stopwatch->isActive())
+    {
+        playPauseBtn->setText("Play");
+        m_stopwatch->stop();
+    }
+    else
+    {
+        playPauseBtn->setText("Pause");
+        m_stopwatch->start(1000);
+    }
 }
