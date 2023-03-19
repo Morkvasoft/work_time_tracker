@@ -2,6 +2,7 @@
 #define USER_SETTING_H_
 
 #include <QSettings>
+#include <QString>
 
 class UserSettings
 {
@@ -13,7 +14,8 @@ class UserSettings
     void setLastActiveProject(const QString& text);
 
   private:
-    QSettings settingsInFile() const;
+    QString getSetting(const QString& key) const;
+    QSettings settingsFromFile() const;
 };
 
 #endif // USER_SETTING_H_

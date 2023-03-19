@@ -1,24 +1,36 @@
 #include "UserSettings.h"
 
 #include <QCoreApplication>
+#include <QSettings>
+#include <QString>
+
+namespace
+{
+const QString LAST_ACTIVE_PROJECT = "LastActiveProject";
+}
 
 QString UserSettings::getLastActiveProject() const
 {
-    QSettings settings = settingsInFile();
-    if (settings.contains("LastActiveProject"))
+    return getSetting(LAST_ACTIVE_PROJECT);
+}
+
+void UserSettings::setLastActiveProject(const QString& text)
+{
+    settingsFromFile().setValue(LAST_ACTIVE_PROJECT, text);
+}
+
+QString UserSettings::getSetting(const QString& key) const
+{
+    QSettings settings = settingsFromFile();
+    if (settings.contains(key))
     {
-        return settings.value("LastActiveProject").toString();
+        return settings.value(key).toString();
     }
 
     return QString();
 }
 
-void UserSettings::setLastActiveProject(const QString& text)
-{
-    settingsInFile().setValue("LastActiveProject", text);
-}
-
-QSettings UserSettings::settingsInFile() const
+QSettings UserSettings::settingsFromFile() const
 {
     return QSettings(QSettings::IniFormat, QSettings::UserScope, QCoreApplication::organizationName(),
                      QCoreApplication::applicationName());

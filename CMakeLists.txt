@@ -22,10 +22,15 @@ set(PROJECT_SOURCES
     widgets/ClockFaceWidget.cpp
     widgets/dialogs/CalendarDialog.h
     widgets/dialogs/CalendarDialog.cpp
-    utils/json_storage/JsonStorage.h
-    utils/json_storage/JsonStorage.cpp
+    utils/data_storage/DataStorage.h
+    utils/data_storage/DataStorage.cpp
+    utils/data_storage/components/Today.h
+    utils/data_storage/components/Today.cpp
+    utils/data_storage/components/Calendar.h
+    utils/data_storage/components/Calendar.cpp
     utils/user_settings/UserSettings.h
     utils/user_settings/UserSettings.cpp
+    utils/helpers/converter.h
 )
 
 qt_add_executable(${PROJECT_NAME} MANUAL_FINALIZATION ${PROJECT_SOURCES})

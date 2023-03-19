@@ -3,9 +3,9 @@
 
 #include <QComboBox>
 #include <QMainWindow>
+#include <QTimer>
 
-#include "utils/json_storage/JsonStorage.h"
-#include "utils/user_settings/UserSettings.h"
+#include "utils/data_storage/DataStorage.h"
 #include "widgets/ClockFaceWidget.h"
 #include "widgets/TimeLabel.h"
 
@@ -23,11 +23,10 @@ class MainWindow : public QMainWindow
     void createTimer();
 
     QComboBox* createProjectsComboBox(QWidget* parent);
-
     void toggleStopwatch(bool checked);
 
   private:
-    JsonStorage m_storage;
+    DataStorage m_storage;
     QTimer* m_stopwatch = nullptr;
     ClockFaceWidget* m_clockFace = nullptr;
     QComboBox* m_projectsComboBox = nullptr;

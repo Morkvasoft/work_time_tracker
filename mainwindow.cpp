@@ -10,9 +10,15 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
+#include "utils/user_settings/UserSettings.h"
 #include "widgets/ClockFaceWidget.h"
 #include "widgets/TimeLabel.h"
 #include "widgets/dialogs/CalendarDialog.h"
+
+namespace
+{
+const int TIMER_FREQUENCY_SEC = 1;
+}
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
@@ -25,16 +31,16 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     this->centralWidget()->layout()->setContentsMargins(0, 0, 0, 0);
     this->centralWidget()->setStyleSheet("background-color:gray;");
 
-    m_clockFace = new ClockFaceWidget(this->centralWidget());
-    m_clockFace->setTime(m_storage.getCurrentDayTime());
-
     m_projectsComboBox = createProjectsComboBox(this->centralWidget());
+
+    m_clockFace = new ClockFaceWidget(this->centralWidget());
+    m_clockFace->setTime(m_storage.getTodayProjectTime(m_projectsComboBox->currentText()));
 
     QPushButton* playPauseBtn = new QPushButton("Play", this->centralWidget());
     connect(playPauseBtn, &QPushButton::clicked, this, &MainWindow::toggleStopwatch);
 
     m_labelFullDay = new TimeLabel(this->centralWidget());
-    m_labelFullDay->setTodayTime(m_storage.getCurrentDayTime());
+    m_labelFullDay->setTodayTime(m_storage.getTodayTotalTime());
 
     this->centralWidget()->layout()->addWidget(m_clockFace);
     this->centralWidget()->layout()->addWidget(m_projectsComboBox);
@@ -75,9 +81,9 @@ void MainWindow::createTimer()
 {
     m_stopwatch = new QTimer(this);
     connect(m_stopwatch, &QTimer::timeout, this, [this]() {
-        m_storage.updateCurrentDay(1, m_projectsComboBox->currentText());
-        m_clockFace->setTime(m_storage.getCurrentDayTimeUnsaved());
-        m_labelFullDay->setTodayTime(m_storage.getCurrentDayTimeUnsaved());
+        m_storage.updatePeriodicallyToday(TIMER_FREQUENCY_SEC);
+        m_clockFace->setTime(m_storage.getTodayProjectTime(m_projectsComboBox->currentText()));
+        m_labelFullDay->setTodayTime(m_storage.getTodayTotalTime());
     });
 }
 
@@ -93,8 +99,10 @@ QComboBox* MainWindow::createProjectsComboBox(QWidget* parent)
         projectsComboBox->setCurrentText(lastActiveProject);
     }
 
-    connect(projectsComboBox, &QComboBox::currentTextChanged, this,
-            [this](const QString& text) { UserSettings().setLastActiveProject(text); });
+    connect(projectsComboBox, &QComboBox::currentTextChanged, this, [this](const QString& text) {
+        m_storage.switchActiveProject(text);
+        UserSettings().setLastActiveProject(text);
+    });
 
     return projectsComboBox;
 }
@@ -115,6 +123,6 @@ void MainWindow::toggleStopwatch(bool checked)
     else
     {
         playPauseBtn->setText("Pause");
-        m_stopwatch->start(1000);
+        m_stopwatch->start(TIMER_FREQUENCY_SEC * 1000);
     }
 }

@@ -6,7 +6,7 @@
 #include <QTime>
 #include <QVBoxLayout>
 
-CalendarDialog::CalendarDialog(JsonStorage& storage, QWidget* parent) : m_storage(storage)
+CalendarDialog::CalendarDialog(DataStorage& storage, QWidget* parent) : m_storage(storage)
 {
     m_storage.readCalendarDataFromFile();
 
@@ -52,12 +52,12 @@ QGroupBox* CalendarDialog::createDayGroupBox(QWidget* parent)
     previewGroupBox->setLayout(previewLayout);
 
     QLabel* label = new QLabel(previewGroupBox);
-    QTime time = QTime(0, 0, 0).addSecs(m_storage.getDayTime(m_calendar->selectedDate()));
+    QTime time = QTime(0, 0, 0).addSecs(m_storage.getTotalTime(m_calendar->selectedDate()));
     QString timeStr = time.toString("'Today: 'H' hour(s), 'm' minute(s)'");
     label->setText(timeStr);
 
     connect(m_calendar, &QCalendarWidget::clicked, this, [this, label](QDate date) {
-        QTime time = QTime(0, 0, 0).addSecs(m_storage.getDayTime(date));
+        QTime time = QTime(0, 0, 0).addSecs(m_storage.getTotalTime(date));
         QString timeStr = time.toString("'Today: 'H' hour(s), 'm' minute(s)'");
         label->setText(timeStr);
     });
@@ -81,7 +81,7 @@ QGroupBox* CalendarDialog::createWeekGroupBox(QWidget* parent)
         QTime time = QTime(0, 0, 0);
         for (int day = Qt::Monday; day <= Qt::Sunday; day++)
         {
-            time = time.addSecs(m_storage.getDayTime(firstDayOfThisWeek));
+            time = time.addSecs(m_storage.getTotalTime(firstDayOfThisWeek));
             firstDayOfThisWeek = firstDayOfThisWeek.addDays(1);
         }
 
@@ -109,7 +109,7 @@ QGroupBox* CalendarDialog::createMonthGroupBox(QWidget* parent)
         QTime time = QTime(0, 0, 0);
         for (int day = 1; day <= firstDayOfThisMonth.daysInMonth(); day++)
         {
-            time = time.addSecs(m_storage.getDayTime(firstDayOfThisMonth));
+            time = time.addSecs(m_storage.getTotalTime(firstDayOfThisMonth));
             firstDayOfThisMonth = firstDayOfThisMonth.addDays(1);
         }
 

@@ -6,14 +6,14 @@
 #include <QGroupBox>
 
 
-#include "utils/json_storage/JsonStorage.h"
+#include "utils/data_storage/DataStorage.h"
 
 class CalendarDialog : public QDialog
 {
     Q_OBJECT
 
   public:
-    CalendarDialog(JsonStorage& storage, QWidget* parent = nullptr);
+    CalendarDialog(DataStorage& storage, QWidget* parent = nullptr);
     ~CalendarDialog();
 
   private:
@@ -23,7 +23,7 @@ class CalendarDialog : public QDialog
     QGroupBox* createMonthGroupBox(QWidget* parent);
 
   private:
-    JsonStorage& m_storage;
+    DataStorage& m_storage;
     QCalendarWidget* m_calendar = nullptr;
 };
 
