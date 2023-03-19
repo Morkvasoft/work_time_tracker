@@ -17,6 +17,9 @@ class Calendar
     void updateCalendar(Today& today);
 
   private:
+    QString getFileLocation() const;
+
+  private:
     QJsonObject m_calendarDictionary;
 };
 

@@ -89,6 +89,19 @@ QGroupBox* CalendarDialog::createWeekGroupBox(QWidget* parent)
         label->setText(timeStr);
     });
 
+    const qint32 dayOfWeek = m_calendar->selectedDate().dayOfWeek();
+    const qint32 daysDiff = Qt::Monday - dayOfWeek;
+    QDate firstDayOfThisWeek = m_calendar->selectedDate().addDays(daysDiff);
+    QTime time = QTime(0, 0, 0);
+    for (int day = Qt::Monday; day <= Qt::Sunday; day++)
+    {
+        time = time.addSecs(m_storage.getTotalTime(firstDayOfThisWeek));
+        firstDayOfThisWeek = firstDayOfThisWeek.addDays(1);
+    }
+
+    QString timeStr = time.toString("'Week total: 'H' hour(s), 'm' minute(s)'");
+    label->setText(timeStr);
+
     previewLayout->addWidget(label, 0, 0, Qt::AlignCenter);
 
     return previewGroupBox;
@@ -102,9 +115,7 @@ QGroupBox* CalendarDialog::createMonthGroupBox(QWidget* parent)
 
     QLabel* label = new QLabel("Month");
     connect(m_calendar, &QCalendarWidget::currentPageChanged, this, [this, label](int year, int month) {
-        qDebug() << ">>>> currentPageChanged";
         QDate firstDayOfThisMonth = QDate(year, month, 1);
-        qDebug() << ">>>> firstDayOfThisMonth" << firstDayOfThisMonth;
 
         QTime time = QTime(0, 0, 0);
         for (int day = 1; day <= firstDayOfThisMonth.daysInMonth(); day++)
@@ -116,6 +127,17 @@ QGroupBox* CalendarDialog::createMonthGroupBox(QWidget* parent)
         QString timeStr = time.toString("'Month total: 'H' hour(s), 'm' minute(s)'");
         label->setText(timeStr);
     });
+
+    QDate firstDayOfThisMonth = QDate(m_calendar->yearShown(), m_calendar->monthShown(), 1);
+    QTime time = QTime(0, 0, 0);
+    for (int day = 1; day <= firstDayOfThisMonth.daysInMonth(); day++)
+    {
+        time = time.addSecs(m_storage.getTotalTime(firstDayOfThisMonth));
+        firstDayOfThisMonth = firstDayOfThisMonth.addDays(1);
+    }
+
+    QString timeStr = time.toString("'Month total: 'H' hour(s), 'm' minute(s)'");
+    label->setText(timeStr);
 
     previewLayout->addWidget(label, 0, 0, Qt::AlignCenter);
 

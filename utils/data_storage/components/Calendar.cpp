@@ -1,14 +1,18 @@
 #include "Calendar.h"
 
+#include <QDir>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QStandardPaths>
 #include <QStringList>
 
 #include "utils/helpers/converter.h"
 
 namespace
 {
+
+const char* FILE_NAME = "calendar.morkva.json";
 const char* DAY_TIME_KEY = "day_time";
 
 } // namespace
@@ -20,7 +24,7 @@ void Calendar::readFromFile()
         return;
     }
 
-    QFile file("C:/Users/yevhe/Documents/morkvasoft/timer_for_work_qt/calendar.morkva.json");
+    QFile file(getFileLocation());
     if (file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QString val = file.readAll();
@@ -37,7 +41,7 @@ void Calendar::storeToFile()
         return;
     }
 
-    QFile file("C:/Users/yevhe/Documents/morkvasoft/timer_for_work_qt/calendar.morkva.json");
+    QFile file(getFileLocation());
     if (file.open(QIODevice::WriteOnly))
     {
         QJsonDocument jsonDoc(m_calendarDictionary);
@@ -75,4 +79,9 @@ int Calendar::getTotalTimeForDate(const QDate& date) const
     }
 
     return 0;
+}
+
+QString Calendar::getFileLocation() const
+{
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QDir::separator() + FILE_NAME;
 }

@@ -1,14 +1,18 @@
 #include "Today.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QStandardPaths>
 
 #include "utils/helpers/converter.h"
 
 namespace
 {
+
+const char* FILE_NAME = "day.morkva.json";
 const char* DAY_TIME_KEY = "day_time";
 const char* PROJECTS_KEY = "projects";
 
@@ -21,7 +25,7 @@ void Today::update(int timeSec, const QString& projectName)
 
 void Today::readFromFile()
 {
-    QFile file("C:/Users/yevhe/Documents/morkvasoft/timer_for_work_qt/day.morkva.json");
+    QFile file(getFileLocation());
     if (file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         const QString val = file.readAll();
@@ -38,7 +42,7 @@ void Today::readFromFile()
 
 void Today::storeToFile()
 {
-    QFile file("C:/Users/yevhe/Documents/morkvasoft/timer_for_work_qt/day.morkva.json");
+    QFile file(getFileLocation());
     if (file.open(QIODevice::WriteOnly))
     {
         QJsonDocument jsonDoc(this->toJsonObject());
@@ -81,4 +85,9 @@ int Today::getProjectTime(const QString& projectName) const
 QString Today::getCurrentDateString() const
 {
     return converter::dateToString(QDate::currentDate());
+}
+
+QString Today::getFileLocation() const
+{
+    return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QDir::separator() + FILE_NAME;
 }

@@ -19,6 +19,7 @@ class Today
 
   private:
     QString getCurrentDateString() const;
+    QString getFileLocation() const;
 
   private:
     QJsonObject m_json;

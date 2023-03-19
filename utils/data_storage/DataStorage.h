@@ -14,20 +14,22 @@ class DataStorage
 {
   public:
     DataStorage();
-    ~DataStorage() = default;
+    ~DataStorage();
 
     void updatePeriodicallyToday(int timeSec);
     void updateToday();
     void switchActiveProject(const QString& projectName);
 
-    uint32_t getTotalTime(const QDate& date) const;
-    uint32_t getTodayTotalTime() const;
-    uint32_t getTodayProjectTime(const QString& projectName) const;
+    int getTotalTime(const QDate& date) const;
+    int getTodayTotalTime() const;
+    int getTodayProjectTime(const QString& projectName) const;
+    int getTodayTimeOfActiveProject() const;
 
     void readCalendarDataFromFile();
     void storeCalendarDataFromFile();
 
     void checkNewDay();
+
   private:
     bool isReadyToSaveWorkingTime() const;
 

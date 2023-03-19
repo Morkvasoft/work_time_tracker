@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     m_projectsComboBox = createProjectsComboBox(this->centralWidget());
 
     m_clockFace = new ClockFaceWidget(this->centralWidget());
-    m_clockFace->setTime(m_storage.getTodayProjectTime(m_projectsComboBox->currentText()));
+    m_clockFace->setTime(m_storage.getTodayTimeOfActiveProject());
 
     QPushButton* playPauseBtn = new QPushButton("Play", this->centralWidget());
     connect(playPauseBtn, &QPushButton::clicked, this, &MainWindow::toggleStopwatch);
@@ -82,7 +82,7 @@ void MainWindow::createTimer()
     m_stopwatch = new QTimer(this);
     connect(m_stopwatch, &QTimer::timeout, this, [this]() {
         m_storage.updatePeriodicallyToday(TIMER_FREQUENCY_SEC);
-        m_clockFace->setTime(m_storage.getTodayProjectTime(m_projectsComboBox->currentText()));
+        m_clockFace->setTime(m_storage.getTodayTimeOfActiveProject());
         m_labelFullDay->setTodayTime(m_storage.getTodayTotalTime());
     });
 }
@@ -93,15 +93,15 @@ QComboBox* MainWindow::createProjectsComboBox(QWidget* parent)
     projectsComboBox->addItem("None");
     projectsComboBox->addItem("rpg_editor");
 
-    QString lastActiveProject = UserSettings().getLastActiveProject();
-    if (!lastActiveProject.isEmpty())
-    {
-        projectsComboBox->setCurrentText(lastActiveProject);
-    }
+    const QString savedActiveProject = UserSettings().getLastActiveProject();
+    QString project = savedActiveProject.isEmpty() ? "None" : savedActiveProject;
+    projectsComboBox->setCurrentText(project);
+    m_storage.switchActiveProject(project);
 
-    connect(projectsComboBox, &QComboBox::currentTextChanged, this, [this](const QString& text) {
-        m_storage.switchActiveProject(text);
-        UserSettings().setLastActiveProject(text);
+    connect(projectsComboBox, &QComboBox::currentTextChanged, this, [this](const QString& project) {
+        m_storage.switchActiveProject(project);
+        m_clockFace->setTime(m_storage.getTodayTimeOfActiveProject());
+        UserSettings().setLastActiveProject(project);
     });
 
     return projectsComboBox;

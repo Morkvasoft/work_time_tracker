@@ -2,6 +2,8 @@
 
 #include <QDate>
 #include <QDebug>
+#include <QDir>
+#include <QStandardPaths>
 #include <QString>
 
 namespace
@@ -13,7 +15,20 @@ static const int SAVE_FREQUENCY_SEC = 5;
 
 DataStorage::DataStorage()
 {
+    const QString storagePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    if (!QDir(storagePath).exists())
+    {
+        QDir().mkdir(storagePath);
+    }
+
     m_today.readFromFile();
+    m_calendar.updateCalendar(m_today);
+}
+
+DataStorage::~DataStorage()
+{
+    updateToday();
+    m_calendar.updateCalendar(m_today);
 }
 
 void DataStorage::updatePeriodicallyToday(int timeSec)
@@ -43,23 +58,28 @@ void DataStorage::updateToday()
 
 void DataStorage::switchActiveProject(const QString& projectName)
 {
-    m_activeProject = projectName;
     updateToday();
+    m_activeProject = projectName;
 }
 
-uint32_t DataStorage::getTotalTime(const QDate& date) const
+int DataStorage::getTotalTime(const QDate& date) const
 {
     return m_calendar.getTotalTimeForDate(date);
 }
 
-uint32_t DataStorage::getTodayTotalTime() const
+int DataStorage::getTodayTotalTime() const
 {
     return m_today.getTotalTime() + m_timeCollector;
 }
 
-uint32_t DataStorage::getTodayProjectTime(const QString& projectName) const
+int DataStorage::getTodayProjectTime(const QString& projectName) const
 {
     return m_today.getProjectTime(projectName) + m_timeCollector;
+}
+
+int DataStorage::getTodayTimeOfActiveProject() const
+{
+    return getTodayProjectTime(m_activeProject);
 }
 
 void DataStorage::readCalendarDataFromFile()
