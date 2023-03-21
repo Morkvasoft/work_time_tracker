@@ -26,7 +26,7 @@ void ClockFaceWidget::setTime(int seconds)
 QLabel* ClockFaceWidget::createClockFaceLabel(QWidget* parent)
 {
     QLabel* label = new QLabel("00:00", parent);
-    label->setStyleSheet("background-color:darkgray;");
+    // label->setStyleSheet("background-color:darkgray;");
     label->setFont(QFont("Arial", 40, QFont::Bold));
 
     return label;

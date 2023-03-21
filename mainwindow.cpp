@@ -22,7 +22,8 @@ const int TIMER_FREQUENCY_SEC = 1;
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
-    this->resize(300, 400);
+    this->move(0, 0);
+    this->setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum);
     this->createMenu();
 
     this->setCentralWidget(new QWidget(this));

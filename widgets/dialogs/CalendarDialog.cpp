@@ -8,6 +8,7 @@
 
 CalendarDialog::CalendarDialog(DataStorage& storage, QWidget* parent) : m_storage(storage)
 {
+    m_storage.updateToday();
     m_storage.readCalendarDataFromFile();
 
     // this->resize(300, 400);
