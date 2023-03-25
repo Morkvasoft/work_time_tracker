@@ -50,7 +50,7 @@ void Calendar::storeToFile()
     }
 }
 
-void Calendar::updateCalendar(Today& today)
+void Calendar::update(Today& today)
 {
     if (m_calendarDictionary.empty())
     {

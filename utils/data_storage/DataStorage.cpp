@@ -22,13 +22,13 @@ DataStorage::DataStorage()
     }
 
     m_today.readFromFile();
-    m_calendar.updateCalendar(m_today);
+    m_calendar.update(m_today);
 }
 
 DataStorage::~DataStorage()
 {
     updateToday();
-    m_calendar.updateCalendar(m_today);
+    m_calendar.update(m_today);
 }
 
 void DataStorage::updatePeriodicallyToday(int timeSec)
@@ -49,11 +49,21 @@ void DataStorage::updateToday()
         return;
     }
 
-    m_today.update(m_timeCollector, m_activeProject);
+    if (m_today.isNewDayStarted())
+    {
+        m_calendar.update(m_today);
+        m_today.clear();
+    }
 
-    checkNewDay();
+    m_today.update(m_timeCollector, m_activeProject);
     m_today.storeToFile();
+
     m_timeCollector = 0;
+}
+
+void DataStorage::updateCalendar()
+{
+    m_calendar.update(m_today);
 }
 
 void DataStorage::switchActiveProject(const QString& projectName)
@@ -90,17 +100,6 @@ void DataStorage::readCalendarDataFromFile()
 void DataStorage::storeCalendarDataFromFile()
 {
     m_calendar.storeToFile();
-}
-
-void DataStorage::checkNewDay()
-{
-    // QStringList currentDayKeys = m_currentDayDictionary.keys();
-    // if (currentDayKeys.size() > 1)
-    // {
-    //     m_calendar.updateCalendar(m_today);
-    //     const QString yesterdayKey = currentDayKeys[0];
-    //     m_currentDayDictionary.remove(yesterdayKey);
-    // }
 }
 
 bool DataStorage::isReadyToSaveWorkingTime() const

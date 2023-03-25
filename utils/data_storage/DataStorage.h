@@ -18,6 +18,7 @@ class DataStorage
 
     void updatePeriodicallyToday(int timeSec);
     void updateToday();
+    void updateCalendar();
     void switchActiveProject(const QString& projectName);
 
     int getTotalTime(const QDate& date) const;
@@ -27,8 +28,6 @@ class DataStorage
 
     void readCalendarDataFromFile();
     void storeCalendarDataFromFile();
-
-    void checkNewDay();
 
   private:
     bool isReadyToSaveWorkingTime() const;

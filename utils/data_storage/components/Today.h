@@ -13,17 +13,19 @@ class Today
     void storeToFile();
 
     QJsonObject toJsonObject();
+    void clear();
 
     int getTotalTime() const;
     int getProjectTime(const QString& projectName) const;
+    bool isNewDayStarted() const;
 
   private:
     QString getCurrentDateString() const;
     QString getFileLocation() const;
 
   private:
-    QJsonObject m_json;
     QVariantMap m_projects;
+    QString m_lastStoredDay;
 };
 
 #endif // TODAY_H_

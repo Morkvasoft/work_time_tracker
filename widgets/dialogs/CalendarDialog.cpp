@@ -1,15 +1,18 @@
 #include "CalendarDialog.h"
 
 #include <QCalendarWidget>
+#include <QDateTime>
 #include <QGroupBox>
 #include <QLabel>
 #include <QTime>
 #include <QVBoxLayout>
 
+#include "utils/helpers/converter.h"
+
 CalendarDialog::CalendarDialog(DataStorage& storage, QWidget* parent) : m_storage(storage)
 {
     m_storage.updateToday();
-    m_storage.readCalendarDataFromFile();
+    m_storage.updateCalendar();
 
     // this->resize(300, 400);
     this->setWindowTitle(tr("Calendar"));
@@ -79,28 +82,28 @@ QGroupBox* CalendarDialog::createWeekGroupBox(QWidget* parent)
         const qint32 dayOfWeek = date.dayOfWeek();
         const qint32 daysDiff = Qt::Monday - dayOfWeek;
         QDate firstDayOfThisWeek = date.addDays(daysDiff);
-        QTime time = QTime(0, 0, 0);
+        int totalSeconds = 0;
         for (int day = Qt::Monday; day <= Qt::Sunday; day++)
         {
-            time = time.addSecs(m_storage.getTotalTime(firstDayOfThisWeek));
+            totalSeconds += m_storage.getTotalTime(firstDayOfThisWeek);
             firstDayOfThisWeek = firstDayOfThisWeek.addDays(1);
         }
 
-        QString timeStr = time.toString("'Week total: 'H' hour(s), 'm' minute(s)'");
+        QString timeStr = QString("'Week total: %1").arg(converter::secondsToString_Hm(totalSeconds));
         label->setText(timeStr);
     });
 
     const qint32 dayOfWeek = m_calendar->selectedDate().dayOfWeek();
     const qint32 daysDiff = Qt::Monday - dayOfWeek;
     QDate firstDayOfThisWeek = m_calendar->selectedDate().addDays(daysDiff);
-    QTime time = QTime(0, 0, 0);
+    int totalSeconds = 0;
     for (int day = Qt::Monday; day <= Qt::Sunday; day++)
     {
-        time = time.addSecs(m_storage.getTotalTime(firstDayOfThisWeek));
+        totalSeconds += m_storage.getTotalTime(firstDayOfThisWeek);
         firstDayOfThisWeek = firstDayOfThisWeek.addDays(1);
     }
 
-    QString timeStr = time.toString("'Week total: 'H' hour(s), 'm' minute(s)'");
+    QString timeStr = QString("Week total: %1").arg(converter::secondsToString_Hm(totalSeconds));
     label->setText(timeStr);
 
     previewLayout->addWidget(label, 0, 0, Qt::AlignCenter);
@@ -118,26 +121,26 @@ QGroupBox* CalendarDialog::createMonthGroupBox(QWidget* parent)
     connect(m_calendar, &QCalendarWidget::currentPageChanged, this, [this, label](int year, int month) {
         QDate firstDayOfThisMonth = QDate(year, month, 1);
 
-        QTime time = QTime(0, 0, 0);
+        int totalSeconds = 0;
         for (int day = 1; day <= firstDayOfThisMonth.daysInMonth(); day++)
         {
-            time = time.addSecs(m_storage.getTotalTime(firstDayOfThisMonth));
+            totalSeconds += m_storage.getTotalTime(firstDayOfThisMonth);
             firstDayOfThisMonth = firstDayOfThisMonth.addDays(1);
         }
 
-        QString timeStr = time.toString("'Month total: 'H' hour(s), 'm' minute(s)'");
+        QString timeStr = QString("Month total: %1").arg(converter::secondsToString_Hm(totalSeconds));
         label->setText(timeStr);
     });
 
     QDate firstDayOfThisMonth = QDate(m_calendar->yearShown(), m_calendar->monthShown(), 1);
-    QTime time = QTime(0, 0, 0);
+    int totalSeconds = 0;
     for (int day = 1; day <= firstDayOfThisMonth.daysInMonth(); day++)
     {
-        time = time.addSecs(m_storage.getTotalTime(firstDayOfThisMonth));
+        totalSeconds += m_storage.getTotalTime(firstDayOfThisMonth);
         firstDayOfThisMonth = firstDayOfThisMonth.addDays(1);
     }
 
-    QString timeStr = time.toString("'Month total: 'H' hour(s), 'm' minute(s)'");
+    QString timeStr = QString("Month total: %1").arg(converter::secondsToString_Hm(totalSeconds));
     label->setText(timeStr);
 
     previewLayout->addWidget(label, 0, 0, Qt::AlignCenter);

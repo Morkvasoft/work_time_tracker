@@ -14,7 +14,7 @@ class Calendar
     void storeToFile();
 
     int getTotalTimeForDate(const QDate& date) const;
-    void updateCalendar(Today& today);
+    void update(Today& today);
 
   private:
     QString getFileLocation() const;
