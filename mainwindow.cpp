@@ -120,6 +120,7 @@ void MainWindow::toggleStopwatch(bool checked)
     {
         playPauseBtn->setText("Play");
         m_stopwatch->stop();
+        m_storage.updateToday();
     }
     else
     {
