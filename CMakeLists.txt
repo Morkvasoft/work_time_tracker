@@ -20,8 +20,10 @@ set(PROJECT_SOURCES
     widgets/TimeLabel.cpp
     widgets/ClockFaceWidget.h
     widgets/ClockFaceWidget.cpp
-    widgets/dialogs/CalendarDialog.h
-    widgets/dialogs/CalendarDialog.cpp
+    widgets/dialogs/CalendarDialog/CalendarDialog.h
+    widgets/dialogs/CalendarDialog/CalendarDialog.cpp
+    widgets/dialogs/SettingsDialog/SettingsDialog.h
+    widgets/dialogs/SettingsDialog/SettingsDialog.cpp
     utils/data_storage/DataStorage.h
     utils/data_storage/DataStorage.cpp
     utils/data_storage/components/Today.h

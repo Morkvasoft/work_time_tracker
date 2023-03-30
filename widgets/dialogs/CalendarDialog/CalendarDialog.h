@@ -5,7 +5,6 @@
 #include <QDialog>
 #include <QGroupBox>
 
-
 #include "utils/data_storage/DataStorage.h"
 
 class CalendarDialog : public QDialog

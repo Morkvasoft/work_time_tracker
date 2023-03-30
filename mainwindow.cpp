@@ -13,7 +13,8 @@
 #include "utils/user_settings/UserSettings.h"
 #include "widgets/ClockFaceWidget.h"
 #include "widgets/TimeLabel.h"
-#include "widgets/dialogs/CalendarDialog.h"
+#include "widgets/dialogs/CalendarDialog/CalendarDialog.h"
+#include "widgets/dialogs/SettingsDialog/SettingsDialog.h"
 
 namespace
 {
@@ -62,9 +63,7 @@ void MainWindow::createFileMenuItem()
 
     QAction* openSettingsAction = new QAction(tr("Settings"), this);
     connect(openSettingsAction, &QAction::triggered, this, [this]() {
-        QDialog dialog(this);
-        dialog.resize(300, 400);
-        dialog.setWindowTitle(tr("Settings"));
+        SettingsDialog dialog(this);
         dialog.exec();
     });
 

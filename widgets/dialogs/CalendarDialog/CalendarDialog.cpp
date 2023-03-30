@@ -32,6 +32,10 @@ CalendarDialog::CalendarDialog(DataStorage& storage, QWidget* parent) : m_storag
     previewLayout->addWidget(month, 1, 1);
 }
 
+CalendarDialog::~CalendarDialog()
+{
+}
+
 QGroupBox* CalendarDialog::createCalendarGroupBox(QWidget* parent)
 {
     QGroupBox* previewGroupBox = new QGroupBox(tr("Preview"), parent);
@@ -146,8 +150,4 @@ QGroupBox* CalendarDialog::createMonthGroupBox(QWidget* parent)
     previewLayout->addWidget(label, 0, 0, Qt::AlignCenter);
 
     return previewGroupBox;
-}
-
-CalendarDialog::~CalendarDialog()
-{
 }
