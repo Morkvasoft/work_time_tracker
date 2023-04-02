@@ -3,6 +3,7 @@
 
 #include <QSettings>
 #include <QString>
+#include <QStringList>
 
 class UserSettings
 {
@@ -12,6 +13,9 @@ class UserSettings
 
     QString getLastActiveProject() const;
     void setLastActiveProject(const QString& text);
+
+    QStringList getProjects() const;
+    void setProjects(const QStringList& projects);
 
   private:
     QString getSetting(const QString& key) const;

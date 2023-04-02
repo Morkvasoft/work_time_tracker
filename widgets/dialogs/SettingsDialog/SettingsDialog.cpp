@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 
 #include "utils/helpers/converter.h"
+#include "utils/user_settings/UserSettings.h"
 
 SettingsDialog::SettingsDialog(QWidget* parent)
 {
@@ -44,8 +45,15 @@ QWidget* SettingsDialog::createProjectCreatorWidget(QWidget* parent)
         const QString projectName = nameField->text();
         if (!projectName.isEmpty())
         {
-            QWidget* projectRow = createProjectWidget(projectName, m_projectsList);
-            m_projectsList->layout()->addWidget(projectRow);
+            QStringList projectsBefore = getProjectsList();
+            if (!projectsBefore.contains(projectName))
+            {
+                QWidget* projectRow = createProjectWidget(projectName, m_projectsList);
+                m_projectsList->layout()->addWidget(projectRow);
+                QStringList projectsAfter = getProjectsList();
+                UserSettings().setProjects(projectsAfter);
+                emit projectsListChanged();
+            }
         }
     });
 
@@ -62,6 +70,13 @@ QWidget* SettingsDialog::createProjectsListWidget(QWidget* parent)
     listWidget->layout()->setContentsMargins(5, 0, 5, 0);
     listWidget->layout()->setSpacing(0);
 
+    QStringList projects = UserSettings().getProjects();
+    for (QString& projectName : projects)
+    {
+        QWidget* projectRow = createProjectWidget(projectName, listWidget);
+        listWidget->layout()->addWidget(projectRow);
+    }
+
     return listWidget;
 }
 
@@ -75,10 +90,34 @@ QWidget* SettingsDialog::createProjectWidget(const QString& name, QWidget* paren
     QLabel* nameLabel = new QLabel(name, projectRow);
     QPushButton* removeBtn = new QPushButton("Remove", projectRow);
     removeBtn->setFixedWidth(100);
-    connect(removeBtn, &QPushButton::clicked, [projectRow]() { projectRow->deleteLater(); });
+    connect(removeBtn, &QPushButton::clicked, [this, projectRow]() {
+        projectRow->deleteLater();
+        projectRow->setParent(nullptr);
+        m_projectsList->layout()->removeWidget(projectRow);
+        delete projectRow;
+        QStringList projectsAfter = getProjectsList();
+        UserSettings().setProjects(projectsAfter);
+        emit projectsListChanged();
+    });
 
     layout->addWidget(nameLabel);
     layout->addWidget(removeBtn);
 
     return projectRow;
+}
+
+QStringList SettingsDialog::getProjectsList() const
+{
+    QStringList list;
+
+    QList<QWidget*> children = m_projectsList->findChildren<QWidget*>();
+    for (QWidget* child : children)
+    {
+        if (QLabel* label = child->findChild<QLabel*>())
+        {
+            list.append(label->text());
+        }
+    }
+
+    return list;
 }

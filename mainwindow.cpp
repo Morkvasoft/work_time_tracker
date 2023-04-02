@@ -63,8 +63,19 @@ void MainWindow::createFileMenuItem()
 
     QAction* openSettingsAction = new QAction(tr("Settings"), this);
     connect(openSettingsAction, &QAction::triggered, this, [this]() {
-        SettingsDialog dialog(this);
-        dialog.exec();
+        SettingsDialog* dialog = new SettingsDialog(this);
+        connect(dialog, &SettingsDialog::projectsListChanged, [this]() {
+            QString active = m_projectsComboBox->currentText();
+            m_projectsComboBox->clear();
+            m_projectsComboBox->addItem("None");
+            for (QString& projectName : UserSettings().getProjects())
+            {
+                m_projectsComboBox->addItem(projectName);
+            }
+            m_projectsComboBox->setCurrentText(active);
+        });
+        dialog->exec();
+        dialog->deleteLater();
     });
 
     QAction* openCalendarAction = new QAction(tr("Calendar"), this);
@@ -91,7 +102,10 @@ QComboBox* MainWindow::createProjectsComboBox(QWidget* parent)
 {
     QComboBox* projectsComboBox = new QComboBox(parent);
     projectsComboBox->addItem("None");
-    projectsComboBox->addItem("rpg_editor");
+    for (QString& projectName : UserSettings().getProjects())
+    {
+        projectsComboBox->addItem(projectName);
+    }
 
     const QString savedActiveProject = UserSettings().getLastActiveProject();
     QString project = savedActiveProject.isEmpty() ? "None" : savedActiveProject;
