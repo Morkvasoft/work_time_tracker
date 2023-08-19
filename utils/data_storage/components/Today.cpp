@@ -73,6 +73,7 @@ void Today::clear()
 {
     QFile file(getFileLocation());
     file.resize(0);
+    m_projects.clear();
 }
 
 int Today::getTotalTime() const
