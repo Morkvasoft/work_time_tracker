@@ -51,6 +51,7 @@ void DataStorage::updateToday()
 
     if (m_today.isNewDayStarted())
     {
+        m_calendar.update(m_today);
         m_today.clear();
     }
 
