@@ -46,7 +46,7 @@ QGroupBox* CalendarDialog::createCalendarGroupBox(QWidget* parent)
     m_calendar->setMinimumDate(QDate(1900, 1, 1));
     m_calendar->setMaximumDate(QDate(3000, 1, 1));
     m_calendar->setGridVisible(true);
-    m_calendar->setFirstDayOfWeek(Qt::Monday);
+    m_calendar->setFirstDayOfWeek(Qt::Sunday);
 
     previewLayout->addWidget(m_calendar, 0, 0, Qt::AlignCenter);
 
@@ -84,8 +84,8 @@ QGroupBox* CalendarDialog::createWeekGroupBox(QWidget* parent)
     QLabel* label = new QLabel("Week");
     connect(m_calendar, &QCalendarWidget::clicked, this, [this, label](QDate date) {
         const qint32 dayOfWeek = date.dayOfWeek();
-        const qint32 daysDiff = Qt::Monday - dayOfWeek;
-        QDate firstDayOfThisWeek = date.addDays(daysDiff);
+        QDate firstDayOfThisWeek = (dayOfWeek == Qt::Sunday) ? date : date.addDays(Qt::Monday - dayOfWeek - 1);
+
         int totalSeconds = 0;
         for (int day = Qt::Monday; day <= Qt::Sunday; day++)
         {
@@ -93,13 +93,14 @@ QGroupBox* CalendarDialog::createWeekGroupBox(QWidget* parent)
             firstDayOfThisWeek = firstDayOfThisWeek.addDays(1);
         }
 
-        QString timeStr = QString("'Week total: %1").arg(converter::secondsToString_Hm(totalSeconds));
+        QString timeStr = QString("Week total: %1").arg(converter::secondsToString_Hm(totalSeconds));
         label->setText(timeStr);
     });
 
-    const qint32 dayOfWeek = m_calendar->selectedDate().dayOfWeek();
-    const qint32 daysDiff = Qt::Monday - dayOfWeek;
-    QDate firstDayOfThisWeek = m_calendar->selectedDate().addDays(daysDiff);
+    QDate selectedDate = m_calendar->selectedDate();
+    const qint32 dayOfWeek = selectedDate.dayOfWeek();
+    QDate firstDayOfThisWeek =
+        (dayOfWeek == Qt::Sunday) ? selectedDate : selectedDate.addDays(Qt::Monday - dayOfWeek - 1);
     int totalSeconds = 0;
     for (int day = Qt::Monday; day <= Qt::Sunday; day++)
     {
