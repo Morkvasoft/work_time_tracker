@@ -2,28 +2,30 @@
 
 #include "core/include/TimeLabel.h"
 
+#include <QTime>
+
 TimeLabel::TimeLabel(QWidget* parent) : QLabel(parent)
 {
-    resetTimeText(); // Set initial text
+    this->setFont(QFont("Arial", 40, QFont::Bold));
+
+    resetTimeText();
 }
 
 void TimeLabel::updateTimeText(int elapsedSeconds)
 {
-    setText(formatTime(elapsedSeconds));
+    const QString timeStr = formatTime(elapsedSeconds);
+    this->setText(timeStr);
 }
 
 void TimeLabel::resetTimeText()
 {
-    setText("00:00:00");
+    this->setText("00:00");
 }
 
 QString TimeLabel::formatTime(int elapsedSeconds)
 {
-    int hours = elapsedSeconds / 3600;
-    int minutes = (elapsedSeconds % 3600) / 60;
-    int seconds = elapsedSeconds % 60;
-    return QString("%1:%2:%3")
-        .arg(hours, 2, 10, QLatin1Char('0'))
-        .arg(minutes, 2, 10, QLatin1Char('0'))
-        .arg(seconds, 2, 10, QLatin1Char('0'));
+    const QTime time = QTime(0, 0, 0).addSecs(elapsedSeconds);
+    const QString timeStr = time.hour() > 0 ? time.toString("HH:mm:ss") : time.toString("mm:ss");
+
+    return timeStr;
 }

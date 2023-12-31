@@ -13,10 +13,8 @@ class TimeLabel : public QLabel
   public:
     explicit TimeLabel(QWidget* parent = nullptr);
 
-    void resetTimeText();
-
-  public slots:
     void updateTimeText(int elapsedSeconds);
+    void resetTimeText();
 
   private:
     QString formatTime(int elapsedSeconds);

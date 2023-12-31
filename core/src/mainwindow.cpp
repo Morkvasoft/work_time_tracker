@@ -2,7 +2,11 @@
 
 #include "core/include/MainWindow.h"
 
+#include "core/include/DataStorage.h"
+
+#include <QString>
 #include <QVBoxLayout>
+#include <QVector>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 {
@@ -26,12 +30,20 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
     // Add UI components to central widget's layout
     centralWidget->layout()->addWidget(timeLabel_);
     centralWidget->layout()->addWidget(toggleBtn_);
+
+    // Storage
+    initializeCoreStorage();
+}
+
+MainWindow::~MainWindow()
+{
+    storage_.saveData();
 }
 
 QTimer* MainWindow::initializeTimer(QWidget* parent)
 {
     QTimer* timer = new QTimer(parent);
-    connect(timer, &QTimer::timeout, this, &MainWindow::updateDisplay);
+    connect(timer, &QTimer::timeout, this, &MainWindow::onUpdate);
 
     return timer;
 }
@@ -46,12 +58,26 @@ TimeLabel* MainWindow::initializeTimeLabel(QWidget* parent)
 QPushButton* MainWindow::initializeToggleBtn(QWidget* parent)
 {
     QPushButton* toggleBtn = new QPushButton("Start", parent);
-    connect(toggleBtn, &QPushButton::clicked, this, &MainWindow::toggleStopwatch);
+    connect(toggleBtn, &QPushButton::clicked, this, &MainWindow::onToggleStopwatch);
 
     return toggleBtn;
 }
 
-void MainWindow::toggleStopwatch()
+void MainWindow::initializeCoreStorage()
+{
+    QVector<QString> fields = {"total_time"};
+    storage_.addNewStorageRow("Core", fields);
+
+    auto total_time = storage_.getTodayFieldValue("Core", "total_time").toInt();
+    elapsedSeconds_ = total_time;
+
+    if (elapsedSeconds_ > 0)
+    {
+        onUpdate();
+    }
+}
+
+void MainWindow::onToggleStopwatch()
 {
     if (timer_->isActive())
     {
@@ -62,23 +88,17 @@ void MainWindow::toggleStopwatch()
     {
         if (elapsedSeconds_ == 0)
         {
-            timeLabel_->setText("00:00:00"); // Reset label if starting from 0
+            timeLabel_->resetTimeText();
         }
         timer_->start(1000); // Update every second
         toggleBtn_->setText("Stop");
     }
 }
 
-void MainWindow::updateDisplay()
+void MainWindow::onUpdate()
 {
     ++elapsedSeconds_;
-    int hours = elapsedSeconds_ / 3600;
-    int minutes = (elapsedSeconds_ / 60) % 60;
-    int seconds = elapsedSeconds_ % 60;
 
-    // Update the label with the new time
-    timeLabel_->setText(QString("%1:%2:%3")
-                            .arg(hours, 2, 10, QLatin1Char('0'))
-                            .arg(minutes, 2, 10, QLatin1Char('0'))
-                            .arg(seconds, 2, 10, QLatin1Char('0')));
+    timeLabel_->updateTimeText(elapsedSeconds_);
+    storage_.updateFieldInTodayRow("Core", "total_time", elapsedSeconds_);
 }

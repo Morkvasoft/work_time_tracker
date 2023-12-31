@@ -7,12 +7,15 @@ set(CORE_HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/MainWindow.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/SplashScreen.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/TimeLabel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/DataStorage.h
 )
 
 set(CORE_SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/MainWindow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/SplashScreen.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/TimeLabel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/DataStorage.cpp
 )
 
 set(CORE_RESOURCES_FILES

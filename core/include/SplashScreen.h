@@ -3,11 +3,7 @@
 #ifndef CORE_SPLASH_SCREEN_H
 #define CORE_SPLASH_SCREEN_H
 
-#include <QDebug>
-#include <QEventLoop>
-#include <QPixmap>
 #include <QSplashScreen>
-#include <QTimer>
 
 /**
  * @class SplashScreen
@@ -24,32 +20,12 @@ class SplashScreen
     inline static const QString SPLASH_IMAGE_PATH = ":/images/splash_image.png";
 
   public:
-    SplashScreen()
-    {
-        QPixmap pixmap(SPLASH_IMAGE_PATH);
+    SplashScreen();
 
-        if (pixmap.isNull())
-        {
-            qWarning() << "Failed to load the splash image.";
-        }
-
-        splash_.setPixmap(pixmap);
-    }
-
-    void showForDuration(int milliseconds)
-    {
-        splash_.show();
-        sleepFor(milliseconds);
-        splash_.close();
-    }
+    void showForDuration(int milliseconds);
 
   private:
-    void sleepFor(int milliseconds)
-    {
-        QEventLoop loop;
-        QTimer::singleShot(milliseconds, &loop, &QEventLoop::quit);
-        loop.exec();
-    }
+    void sleepFor(int milliseconds);
 
   private:
     QSplashScreen splash_;
