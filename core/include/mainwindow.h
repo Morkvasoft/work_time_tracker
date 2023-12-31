@@ -1,7 +1,9 @@
 // Copyright (C) 2024 Morkvasoft. Open Source under the MIT License.
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef CORE_MAIN_WINDOW_H
+#define CORE_MAIN_WINDOW_H
+
+#include "core/include/TimeLabel.h"
 
 #include <QLabel>
 #include <QMainWindow>
@@ -16,15 +18,20 @@ class MainWindow : public QMainWindow
     explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow() = default;
 
-  public slots:
-    void startStopwatch();
+  private:
+    QTimer* initializeTimer(QWidget* parent);
+    TimeLabel* initializeTimeLabel(QWidget* parent);
+    QPushButton* initializeToggleBtn(QWidget* parent);
+
+  private slots:
+    void toggleStopwatch();
     void updateDisplay();
 
   private:
-    QTimer* timer_;       // Timer to keep track of elapsed time
-    QPushButton* button_; // Button to start/stop the stopwatch
-    QLabel* label_;       // Label to display the time
-    int elapsedSeconds_;  // Elapsed time in seconds
+    QTimer* timer_ = nullptr;          // Timer to keep track of elapsed time
+    TimeLabel* timeLabel_ = nullptr;   // Label to display the time
+    QPushButton* toggleBtn_ = nullptr; // Button to start/stop the stopwatch
+    int elapsedSeconds_ = 0;           // Elapsed time in seconds
 };
 
-#endif // MAINWINDOW_H
+#endif // CORE_MAIN_WINDOW_H

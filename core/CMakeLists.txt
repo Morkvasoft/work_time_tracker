@@ -4,13 +4,15 @@
 # Define Header, Source and Resources Files for Core
 # ---------------------------
 set(CORE_HEADER_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/mainwindow.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/splash_screen.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/MainWindow.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/SplashScreen.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/TimeLabel.h
 )
 
 set(CORE_SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/mainwindow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/MainWindow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TimeLabel.cpp
 )
 
 set(CORE_RESOURCES_FILES

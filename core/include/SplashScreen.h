@@ -1,7 +1,7 @@
 // Copyright (C) 2024 Morkvasoft. Open Source under the MIT License.
 
-#ifndef SPLASHSCREEN_H
-#define SPLASHSCREEN_H
+#ifndef CORE_SPLASH_SCREEN_H
+#define CORE_SPLASH_SCREEN_H
 
 #include <QDebug>
 #include <QEventLoop>
@@ -55,4 +55,4 @@ class SplashScreen
     QSplashScreen splash_;
 };
 
-#endif // SPLASHSCREEN_H
+#endif // CORE_SPLASH_SCREEN_H
