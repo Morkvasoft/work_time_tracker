@@ -1,13 +1,20 @@
+# Copyright (C) 2024 Morkvasoft. Open Source under the MIT License.
+
 # ---------------------------
-# Define Header and Source Files for Core
+# Define Header, Source and Resources Files for Core
 # ---------------------------
 set(CORE_HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/mainwindow.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/splash_screen.h
 )
 
 set(CORE_SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/mainwindow.cpp
+)
+
+set(CORE_RESOURCES_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/core_resources/resources.qrc
 )
 
 # ---------------------------
@@ -16,6 +23,7 @@ set(CORE_SOURCE_FILES
 qt_add_executable(${PROJECT_NAME} MANUAL_FINALIZATION
     ${CORE_SOURCE_FILES}
     ${CORE_HEADER_FILES}
+    ${CORE_RESOURCES_FILES}
 )
 
 # ---------------------------

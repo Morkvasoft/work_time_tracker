@@ -1,3 +1,5 @@
+# Copyright (C) 2024 Morkvasoft. Open Source under the MIT License.
+
 cmake_minimum_required(VERSION 3.5)
 
 # ---------------------------
