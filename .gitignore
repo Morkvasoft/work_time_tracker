@@ -1,3 +1,9 @@
+# ---------------------------
+# Ignore Directories
+# ---------------------------
 build/
+
+# ---------------------------
+# Ignore IDE Specific
+# ---------------------------
 .vscode/
-CMakeLists.txt.user
