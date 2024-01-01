@@ -65,11 +65,10 @@ QPushButton* MainWindow::initializeToggleBtn(QWidget* parent)
 
 void MainWindow::initializeCoreStorage()
 {
-    QVector<QString> fields = {"total_time"};
-    storage_.addNewStorageRow("Core", fields);
+    storage_.addNewModule("Core", {"total_time"});
 
-    auto total_time = storage_.getTodayFieldValue("Core", "total_time").toInt();
-    elapsedSeconds_ = total_time;
+    auto total_time = storage_.getValue("Core", "total_time").toInt();
+    elapsedSeconds_ = total_time - 1;
 
     if (elapsedSeconds_ > 0)
     {
@@ -100,5 +99,5 @@ void MainWindow::onUpdate()
     ++elapsedSeconds_;
 
     timeLabel_->updateTimeText(elapsedSeconds_);
-    storage_.updateFieldInTodayRow("Core", "total_time", elapsedSeconds_);
+    storage_.setValue("Core", "total_time", elapsedSeconds_);
 }

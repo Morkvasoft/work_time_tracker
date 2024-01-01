@@ -4,31 +4,37 @@
 #define CORE_DAY_DATA_STORAGE_H
 
 #include <QJsonObject>
+#include <QPair>
 #include <QString>
 #include <QVector>
-#include <QPair>
 
 class DataStorage
 {
-    inline static const QString DAY_FILE_NAME = "day.morkva.json";
+    using FieldValuePair = QPair<QString, QString>;
+
+#ifdef QT_DEBUG
+    inline static const QString DATA_FILE_NAME = "debug_data.morkva.json";
+#else
+    inline static const QString DATA_FILE_NAME = "data.morkva.json";
+#endif
 
   public:
     DataStorage();
 
-    void addNewStorageRow(const QString& name, const QVector<QString>& fields);
+    void addNewModule(const QString& module, const QVector<QString>& fields);
 
-    void updateFieldInTodayRow(const QString& rowName, const QString& fieldName, const QString& newValue);
-    void updateFieldInTodayRow(const QString& rowName, const QString& fieldName, int newValue);
+    void setValue(const QString& module, const QString& field, const QString& value);
+    void setValue(const QString& module, const QString& field, int value);
 
-    QString getTodayFieldValue(const QString& moduleName, const QString& fieldName);
-    QVector<QPair<QString, QString>> getModuleTodayData(const QString& name);
+    QString getValue(const QString& module, const QString& field);
+    QVector<FieldValuePair> getValues(const QString& module);
 
     void saveData();
     void loadData();
 
   private:
     QString getCurrentDate() const;
-    QString getDayFilePath() const;
+    QString getDataFilePath() const;
 
   private:
     QString storagePath_;

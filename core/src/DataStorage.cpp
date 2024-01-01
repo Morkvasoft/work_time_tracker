@@ -14,87 +14,90 @@ DataStorage::DataStorage()
     if (!QDir(storagePath_).exists())
     {
         const bool created = QDir().mkpath(storagePath_);
-        Q_UNUSED(created);
+        Q_ASSERT(created);
     }
 
     loadData();
 }
 
-void DataStorage::addNewStorageRow(const QString& name, const QVector<QString>& fields)
+void DataStorage::addNewModule(const QString& module, const QVector<QString>& fields)
 {
     const QString currentDate = getCurrentDate(); // Assuming this is a typo and should be getCurrentDate
     QJsonObject todayData = data_.value(currentDate).toObject();
 
-    // Fetch the existing row or create a new one if it doesn't exist
-    QJsonObject row = todayData.value(name).toObject();
+    // Fetch the existing data
+    QJsonObject moduleData = todayData.value(module).toObject();
 
     // Add new fields to the row. If a field already exists, it won't be modified.
     for (const auto& field : fields)
     {
-        if (!row.contains(field))
+        // If the field doesn't exist in the module, initialize it with an empty string
+        if (!moduleData.contains(field))
         {
-            row[field] = QString(); // Initialize new fields with an empty default value
+            moduleData[field] = QString();
         }
-        // If the field already exists, it's left unchanged
     }
 
-    // Update the data structure
-    todayData[name] = row;
+    // Update and save the modified data
+    todayData[module] = moduleData;
     data_[currentDate] = todayData;
 }
 
-void DataStorage::updateFieldInTodayRow(const QString& rowName, const QString& fieldName, const QString& newValue)
+void DataStorage::setValue(const QString& module, const QString& field, const QString& value)
 {
-    // Get today's data
+    // Retrieve today's data, or create a new object if it doesn't exist
     const QString currentDate = getCurrentDate();
     QJsonObject todayData = data_.value(currentDate).toObject();
 
-    // Get the specific row. If it doesn't exist, this will create a new one.
-    QJsonObject row = todayData.value(rowName).toObject();
+    // Fetch the module data, or create a new object if it doesn't exist
+    QJsonObject moduleData = todayData.value(module).toObject();
 
     // Update the field in the row with the new value
-    row[fieldName] = newValue;
+    moduleData[field] = value;
 
-    // Update today's data with the modified row
-    todayData[rowName] = row;
+    // Update the data structure with the modified module data
+    todayData[module] = moduleData;
     data_[currentDate] = todayData;
 }
 
-void DataStorage::updateFieldInTodayRow(const QString& rowName, const QString& fieldName, int newValue)
+void DataStorage::setValue(const QString& module, const QString& field, int value)
 {
-    updateFieldInTodayRow(rowName, fieldName, QString::number(newValue));
+    setValue(module, field, QString::number(value));
 }
 
-QString DataStorage::getTodayFieldValue(const QString& moduleName, const QString& fieldName)
+QString DataStorage::getValue(const QString& module, const QString& field)
 {
-    // Get today's data
+    // Retrieve today's data, or return an empty string if no data exists for today
     QJsonObject todayData = data_.value(getCurrentDate()).toObject();
 
-    // Get the specified module's data
-    QJsonObject moduleData = todayData.value(moduleName).toObject();
+    // Fetch the data for the specified module, or return an empty string if the module doesn't exist
+    QJsonObject moduleData = todayData.value(module).toObject();
 
-    // Retrieve and return the value of the specified field
-    return moduleData.value(fieldName).toString(); // Returns an empty string if the field doesn't exist
+    // Return the value of the specified field, or an empty string if the field doesn't exist
+    return moduleData.value(field).toString();
 }
 
-QVector<QPair<QString, QString>> DataStorage::getModuleTodayData(const QString& name)
+QVector<DataStorage::FieldValuePair> DataStorage::getValues(const QString& module)
 {
+    // Retrieve today's data, or initialize it if it doesn't exist
     QJsonObject todayData = data_.value(getCurrentDate()).toObject();
-    QJsonObject row = todayData.value(name).toObject();
 
-    // Iterate through all fields in the row and add them to the vector
-    QVector<QPair<QString, QString>> rowData;
-    for (QJsonObject::iterator it = row.begin(); it != row.end(); ++it)
+    // Fetch the data for the specified module, or initialize it if it doesn't exist
+    QJsonObject moduleData = todayData.value(module).toObject();
+
+    // Iterate through all fields in the module and add them to the vector
+    QVector<FieldValuePair> moduleFields;
+    for (QJsonObject::iterator it = moduleData.begin(); it != moduleData.end(); ++it)
     {
-        rowData.append(qMakePair(it.key(), it.value().toString()));
+        moduleFields.append(qMakePair(it.key(), it.value().toString()));
     }
 
-    return rowData;
+    return moduleFields;
 }
 
 void DataStorage::saveData()
 {
-    QFile file(getDayFilePath());
+    QFile file(getDataFilePath());
     if (file.open(QIODevice::WriteOnly))
     {
         file.write(QJsonDocument(data_).toJson());
@@ -104,7 +107,7 @@ void DataStorage::saveData()
 
 void DataStorage::loadData()
 {
-    QFile file(getDayFilePath());
+    QFile file(getDataFilePath());
     if (file.open(QIODevice::ReadOnly))
     {
         QJsonDocument doc(QJsonDocument::fromJson(file.readAll()));
@@ -118,7 +121,7 @@ QString DataStorage::getCurrentDate() const
     return QDate::currentDate().toString(Qt::ISODate);
 }
 
-QString DataStorage::getDayFilePath() const
+QString DataStorage::getDataFilePath() const
 {
-    return storagePath_ + QDir::separator() + DAY_FILE_NAME;
+    return storagePath_ + QDir::separator() + DATA_FILE_NAME;
 }
