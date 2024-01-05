@@ -82,6 +82,7 @@ void MainWindow::onToggleStopwatch()
     {
         timer_->stop();
         toggleBtn_->setText("Start");
+        storage_.saveData();
     }
     else
     {

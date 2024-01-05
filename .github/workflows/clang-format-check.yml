@@ -1,0 +1,13 @@
+name: clang-format Check
+on: [push]
+jobs:
+  formatting-check:
+    name: Formatting Check
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run clang-format style check for Cpp programs.
+      uses: ydementieiev/clang-format-action-cpp@master
+      with:
+        include_folders: ''
+        exclude_folders: ''
