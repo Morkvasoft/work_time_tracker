@@ -9,5 +9,5 @@ jobs:
     - name: Run clang-format style check for Cpp programs.
       uses: ydementieiev/clang-format-action-cpp@master
       with:
-        include_folders: ''
+        include_folders: '.'
         exclude_folders: ''
