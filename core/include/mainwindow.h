@@ -5,11 +5,12 @@
 
 #include "core/include/DataStorage.h"
 #include "core/include/TimeLabel.h"
+#include "sdk/include/Plugin.h"
 
-#include <QLabel>
 #include <QMainWindow>
 #include <QPushButton>
 #include <QTimer>
+#include <QWidget>
 
 class MainWindow : public QMainWindow
 {
@@ -20,11 +21,17 @@ class MainWindow : public QMainWindow
     ~MainWindow();
 
   private:
+    void moveEvent(QMoveEvent* event) override final;
+    void resizeEvent(QResizeEvent* event) override final;
+
     QTimer* initializeTimer(QWidget* parent);
     TimeLabel* initializeTimeLabel(QWidget* parent);
     QPushButton* initializeToggleBtn(QWidget* parent);
 
     void initializeCoreStorage();
+
+    void loadPlugins();
+    void positionPlugins();
 
   private slots:
     void onToggleStopwatch();
@@ -36,6 +43,7 @@ class MainWindow : public QMainWindow
     QPushButton* toggleBtn_ = nullptr; // Button to start/stop the stopwatch
     int elapsedSeconds_ = 0;           // Elapsed time in seconds
     DataStorage storage_;
+    QVector<sdk::Plugin*> plugins_;
 };
 
 #endif // CORE_MAIN_WINDOW_H

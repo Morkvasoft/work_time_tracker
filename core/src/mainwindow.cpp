@@ -4,6 +4,9 @@
 
 #include "core/include/DataStorage.h"
 
+#include <QCoreApplication>
+#include <QDir>
+#include <QPluginLoader>
 #include <QString>
 #include <QVBoxLayout>
 #include <QVector>
@@ -33,6 +36,26 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 
     // Storage
     initializeCoreStorage();
+
+    loadPlugins();
+}
+
+void MainWindow::positionPlugins()
+{
+}
+
+void MainWindow::moveEvent(QMoveEvent* event)
+{
+    QMainWindow::moveEvent(event);
+
+    positionPlugins();
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+    QMainWindow::resizeEvent(event);
+
+    positionPlugins();
 }
 
 MainWindow::~MainWindow()
@@ -74,6 +97,20 @@ void MainWindow::initializeCoreStorage()
     {
         onUpdate();
     }
+}
+
+void MainWindow::loadPlugins()
+{
+#ifndef NDEBUG
+    // During development, use the build directory for plugins
+    QDir pluginsDir(PLUGINS_DIR);
+#else
+    // In release, use the application directory
+    QDir pluginsDir(QCoreApplication::applicationDirPath() + "/plugins");
+#endif
+    qDebug() << "Looking for plugins in:" << pluginsDir.absolutePath();
+
+    positionPlugins();
 }
 
 void MainWindow::onToggleStopwatch()
