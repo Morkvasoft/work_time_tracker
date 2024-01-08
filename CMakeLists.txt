@@ -24,7 +24,7 @@ message(STATUS "Qt Version set to: ${QT_VERSION}")
 # ---------------------------
 # Subprojects
 # ---------------------------
-message(STATUS "Adding subdirectories...")
+message(STATUS "Adding subdirectories...") 
 add_subdirectory(core)
 add_subdirectory(sdk)
 add_subdirectory(plugins/time_manipulator)
