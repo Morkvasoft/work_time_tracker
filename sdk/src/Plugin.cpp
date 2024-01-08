@@ -8,7 +8,7 @@
 namespace sdk
 {
 
-Plugin::Plugin(QWidget* parent) : QWidget(parent, Qt::Dialog | Qt::Window)
+Plugin::Plugin(QWidget* parent) : QWidget(parent, Qt::Dialog | Qt::Tool | Qt::FramelessWindowHint)
 {
     QVBoxLayout* layout = new QVBoxLayout(this);
     // Setup your layout and UI components
@@ -16,4 +16,4 @@ Plugin::Plugin(QWidget* parent) : QWidget(parent, Qt::Dialog | Qt::Window)
     setLayout(layout);
 }
 
-}
+} // namespace sdk

@@ -23,6 +23,9 @@ class MainWindow : public QMainWindow
   private:
     void moveEvent(QMoveEvent* event) override final;
     void resizeEvent(QResizeEvent* event) override final;
+    void showEvent(QShowEvent* event) override final;
+    void hideEvent(QHideEvent* event) override final;
+    void closeEvent(QCloseEvent* event) override final;
 
     QTimer* initializeTimer(QWidget* parent);
     TimeLabel* initializeTimeLabel(QWidget* parent);

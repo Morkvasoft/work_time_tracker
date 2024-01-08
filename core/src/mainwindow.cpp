@@ -42,6 +42,27 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
 
 void MainWindow::positionPlugins()
 {
+    // Get the width of the main window
+    const int mainWidth = this->frameGeometry().width();
+
+    // Update the plugin's position
+    int yOffset = this->frameGeometry().bottom() + 1;
+
+    for (sdk::Plugin* plugin : plugins_)
+    {
+        if (plugin)
+        {
+            // Calculate the new position for the plugin
+            const QPoint newPos = QPoint(this->frameGeometry().left(), yOffset);
+            plugin->move(newPos);
+
+            // Update the width of the plugin to match the main window
+            plugin->resize(mainWidth, plugin->height());
+
+            // Update yOffset to be at the bottom of this plugin, preparing for the next one
+            yOffset = plugin->frameGeometry().bottom() + 1;
+        }
+    }
 }
 
 void MainWindow::moveEvent(QMoveEvent* event)
@@ -56,6 +77,36 @@ void MainWindow::resizeEvent(QResizeEvent* event)
     QMainWindow::resizeEvent(event);
 
     positionPlugins();
+}
+
+void MainWindow::showEvent(QShowEvent* event)
+{
+    QMainWindow::showEvent(event);
+
+    for (auto* plugin : plugins_)
+    {
+        plugin->show();
+    }
+}
+
+void MainWindow::hideEvent(QHideEvent* event)
+{
+    QMainWindow::hideEvent(event);
+
+    for (auto* plugin : plugins_)
+    {
+        plugin->hide();
+    }
+}
+
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+    for (auto* plugin : plugins_)
+    {
+        plugin->close();
+    }
+
+    QMainWindow::closeEvent(event);
 }
 
 MainWindow::~MainWindow()
@@ -109,6 +160,23 @@ void MainWindow::loadPlugins()
     QDir pluginsDir(QCoreApplication::applicationDirPath() + "/plugins");
 #endif
     qDebug() << "Looking for plugins in:" << pluginsDir.absolutePath();
+
+    for (const auto& filename : pluginsDir.entryList(QDir::Files))
+    {
+        QPluginLoader loader(pluginsDir.absoluteFilePath(filename));
+        if (auto plugin_obj = loader.instance())
+        {
+            if (auto plugin = qobject_cast<sdk::Plugin*>(plugin_obj))
+            {
+                plugin->show();
+                plugins_.append(plugin);
+            }
+        }
+        else
+        {
+            qDebug() << "Failed to load plugin:" << filename << ", Error:" << loader.errorString();
+        }
+    }
 
     positionPlugins();
 }
